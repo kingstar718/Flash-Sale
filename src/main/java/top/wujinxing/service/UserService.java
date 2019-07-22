@@ -21,7 +21,7 @@ public class UserService {
         return userDao.getById(id);
     }
 
-    @Transactional //事务测试
+    /*@Transactional //事务测试
     //不加@Tr， 尽管仍会报错，但u2会插入到数据库中，加@，则不会
     public boolean tx(){
         User u2 = new User();
@@ -35,5 +35,5 @@ public class UserService {
         userDao.insert(u1);
 
         return true;
-    }
+    }*/
 }

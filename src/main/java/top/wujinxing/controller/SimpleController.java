@@ -64,7 +64,7 @@ public class SimpleController {
     @Autowired
     RedisService redisService;
 
-    @GetMapping("/redisSet")
+    /*@GetMapping("/redisSet")
     @ResponseBody
     public Result<Boolean> redisSet(){
         User user = new User();
@@ -74,7 +74,8 @@ public class SimpleController {
         //UserKey:id1
         Boolean b1 = redisService.set(UserKey.getById, ""+1, user);
         return Result.success(b1);
-    }
+    }*/
+
     @GetMapping("/redisGet")
     @ResponseBody
     public Result<User> redisGet(){
