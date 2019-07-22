@@ -36,7 +36,7 @@ public class SimpleController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/user")
+    /*@GetMapping("/user")
     @ResponseBody
     public Result<User> deGet(){
         User user = userService.getById(3);
@@ -47,19 +47,19 @@ public class SimpleController {
     @ResponseBody
     public Result<User> getById(Integer id){
         return Result.success(userService.getById(id));
-    }
+    }*/
 
     /**
      * 事务测试
      * @return true
      */
-    @GetMapping("/userTx")
+    /*@GetMapping("/userTx")
     @ResponseBody
     public Result<Boolean> userTx(){
         userService.tx();
         return Result.success(true);
         //SQLIntegrityConstraintViolationException
-    }
+    }*/
 
     @Autowired
     RedisService redisService;

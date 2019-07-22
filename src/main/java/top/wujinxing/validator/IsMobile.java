@@ -21,7 +21,7 @@ public @interface IsMobile {
 
     boolean required() default true;//默认不能为空
 
-    String message() default "收集号码格式错误";
+    String message() default "手机号码格式错误";
 
     Class<?>[] groups() default {};
 

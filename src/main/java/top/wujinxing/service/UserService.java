@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wujinxing.dao.UserDao;
 import top.wujinxing.entity.User;
+import top.wujinxing.result.CodeMsg;
+import top.wujinxing.util.MD5Util;
+import top.wujinxing.vo.LoginVo;
 
 /**
  * @author wujinxing
@@ -17,7 +20,7 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    public User getById(Integer id){
+    public User getById(Long id){
         return userDao.getById(id);
     }
 
@@ -36,4 +39,20 @@ public class UserService {
 
         return true;
     }*/
+    public CodeMsg login(LoginVo loginVo){
+        if (loginVo==null) return CodeMsg.SERVER_ERROR;
+        String mobile = loginVo.getMobile();
+        String formPass = loginVo.getPassword();
+        User user = getById(Long.parseLong(mobile));
+        if (user==null) return CodeMsg.MOBILE_NOT_EXIST;
+        //验证密码
+        String dbPass = user.getPassword();
+        String dbSalt = user.getSalt();
+        String calcPass = MD5Util.formPassToDBPass(formPass, dbSalt);
+        if (!calcPass.equals(dbPass)){ //将表单密码加密后和数据库的进行对比
+            return CodeMsg.PASSWORD_ERROR;
+        }
+        return CodeMsg.SUCCESS;
+
+    }
 }

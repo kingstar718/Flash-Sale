@@ -20,7 +20,7 @@ import top.wujinxing.entity.User;
 public interface UserDao {
 
     @Select("select * from user where id = #{id}")
-    public User getById(@Param("id") Integer id);
+    public User getById(@Param("id") Long id);
 
     @Insert("insert into user(id, name) values(#{id}, #{name})")
     public int insert(User user);

@@ -39,17 +39,26 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result<Boolean> doLogin(LoginVo loginVo){
+    public Result<CodeMsg> doLogin(LoginVo loginVo){
         LOGGER.info(loginVo.toString());
         String passInput = loginVo.getPassword();
         String mobile = loginVo.getMobile();
+        LOGGER.info(mobile+" --- "+passInput);
         if (StringUtils.isEmpty(passInput)){
+            LOGGER.info("密码为空");
             return Result.error(CodeMsg.PASSWORD_EMPTY);
         }
-        if (ValidatorUtil.isMobile(mobile)){
+        if (!ValidatorUtil.isMobile(mobile)){
+            LOGGER.info("手机号为空或错误");
             return Result.error(CodeMsg.MOBILE_ERROR);
         }
-        return null;
+        //登录
+        CodeMsg cm = userService.login(loginVo);
+        if (cm.getCode()==0){
+            return Result.success(CodeMsg.SUCCESS);
+        }else {
+            return Result.error(cm);
+        }
     }
 
 
