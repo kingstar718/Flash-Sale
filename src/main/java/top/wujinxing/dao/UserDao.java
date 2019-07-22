@@ -19,9 +19,9 @@ import top.wujinxing.entity.User;
 @Mapper
 public interface UserDao {
 
-    @Select("select * from user where id = #{id}")
+    @Select("select * from sk_user where id = #{id}")
     public User getById(@Param("id") Long id);
 
-    @Insert("insert into user(id, name) values(#{id}, #{name})")
+    @Insert("insert into sk_user(id, name) values(#{id}, #{name})")
     public int insert(User user);
 }

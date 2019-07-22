@@ -1,5 +1,8 @@
 package top.wujinxing.entity;
 
+import top.wujinxing.validator.IsMobile;
+
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -8,8 +11,12 @@ import java.util.Date;
  * description
  */
 public class User {
+    @NotNull
+    @IsMobile
     private Long id;
+
     private String nickname;
+    @NotNull
     private String password;
     private String salt;
     private String head;

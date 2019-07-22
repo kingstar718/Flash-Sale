@@ -21,8 +21,10 @@ public class IsMobileValidator implements ConstraintValidator<IsMobile, String> 
         required = isMobile.required();
     }
 
+    //判断方法
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
+        System.out.println("进入isMobile的isValid方法");
         if (required){
             return ValidatorUtil.isMobile(value);
         }else {

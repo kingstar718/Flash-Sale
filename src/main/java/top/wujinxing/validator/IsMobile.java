@@ -14,7 +14,7 @@ import java.lang.annotation.*;
             ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(
+@Constraint(//调用该校验器校验
         validatedBy = {IsMobileValidator.class}
 )
 public @interface IsMobile {

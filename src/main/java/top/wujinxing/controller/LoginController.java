@@ -41,9 +41,9 @@ public class LoginController {
     @ResponseBody
     public Result<CodeMsg> doLogin(LoginVo loginVo){
         LOGGER.info(loginVo.toString());
-        String passInput = loginVo.getPassword();
+        //设置@isMobile注解之后，可以不需要下面的注解了
+        /*String passInput = loginVo.getPassword();
         String mobile = loginVo.getMobile();
-        LOGGER.info(mobile+" --- "+passInput);
         if (StringUtils.isEmpty(passInput)){
             LOGGER.info("密码为空");
             return Result.error(CodeMsg.PASSWORD_EMPTY);
@@ -51,7 +51,7 @@ public class LoginController {
         if (!ValidatorUtil.isMobile(mobile)){
             LOGGER.info("手机号为空或错误");
             return Result.error(CodeMsg.MOBILE_ERROR);
-        }
+        }*/
         //登录
         CodeMsg cm = userService.login(loginVo);
         if (cm.getCode()==0){
