@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author wujinxing
  * date 2019 2019/7/21 14:53
- * description
+ * description 用户类
  */
 public class User {
     @NotNull

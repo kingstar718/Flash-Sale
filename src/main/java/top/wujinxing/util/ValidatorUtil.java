@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * @author wujinxing
  * date 2019 2019/7/22 16:20
- * description
+ * description 手机号校验器
  */
 public class ValidatorUtil {
     //默认以1开头后面加10个数字为手机号

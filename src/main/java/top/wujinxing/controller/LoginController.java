@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.wujinxing.result.CodeMsg;
@@ -12,6 +11,8 @@ import top.wujinxing.result.Result;
 import top.wujinxing.service.UserService;
 import top.wujinxing.util.ValidatorUtil;
 import top.wujinxing.vo.LoginVo;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author wujinxing
@@ -39,27 +40,15 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result<CodeMsg> doLogin(LoginVo loginVo){
+    public Result<String> doLogin(HttpServletResponse response, LoginVo loginVo){//加入JSR303参数校验
         LOGGER.info(loginVo.toString());
-        //设置@isMobile注解之后，可以不需要下面的注解了
-        /*String passInput = loginVo.getPassword();
-        String mobile = loginVo.getMobile();
-        if (StringUtils.isEmpty(passInput)){
-            LOGGER.info("密码为空");
-            return Result.error(CodeMsg.PASSWORD_EMPTY);
-        }
-        if (!ValidatorUtil.isMobile(mobile)){
-            LOGGER.info("手机号为空或错误");
-            return Result.error(CodeMsg.MOBILE_ERROR);
-        }*/
-        //登录
-        CodeMsg cm = userService.login(loginVo);
+        /*CodeMsg cm = userService.login(response, loginVo);
         if (cm.getCode()==0){
             return Result.success(CodeMsg.SUCCESS);
         }else {
             return Result.error(cm);
-        }
+        }*/
+        String token = userService.login(response,loginVo);
+        return Result.success(token);
     }
-
-
 }

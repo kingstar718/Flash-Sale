@@ -1,6 +1,6 @@
 package top.wujinxing.validator;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import top.wujinxing.util.ValidatorUtil;
 
 import javax.validation.ConstraintValidator;
