@@ -3,6 +3,8 @@ package top.wujinxing.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.wujinxing.dao.GoodsDao;
+import top.wujinxing.entity.FlashSaleGoods;
+import top.wujinxing.entity.Goods;
 import top.wujinxing.vo.GoodsVo;
 
 import java.util.List;
@@ -24,5 +26,12 @@ public class GoodsService {
 
     public GoodsVo getGoodsVoByGoodsId(long goodsId) {
         return goodsDao.getGoodsVoByGoodsId(goodsId);
+    }
+
+    //减少库存的方法
+    public void reduceStock(GoodsVo goods){
+        FlashSaleGoods g = new FlashSaleGoods();
+        g.setGoodsId(goods.getId());
+        goodsDao.reduceStock(g);
     }
 }
