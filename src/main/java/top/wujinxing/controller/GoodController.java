@@ -63,6 +63,7 @@ public class GoodController {
     }
 
     //JMeter压测数据   932/sec  1000线程10次循环
+    //页面静态化后    2100/sec  1000线程10次循环
     @GetMapping(value = "/to_list", produces = "text/html")
     @ResponseBody
     public String list(HttpServletRequest request,

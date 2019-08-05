@@ -1,9 +1,6 @@
 package top.wujinxing.dao;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 import top.wujinxing.entity.User;
 
@@ -24,4 +21,7 @@ public interface UserDao {
 
     @Insert("insert into sk_user(id, name) values(#{id}, #{name})")
     public int insert(User user);
+
+    @Update("update sk_user set password = #{password} where id = #{id}")
+    public void update(User toBeUpdate);
 }

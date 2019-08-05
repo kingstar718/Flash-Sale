@@ -38,7 +38,32 @@ public class UserService {
     RedisService redisService;//将私人信息存到第三方缓存中
 
     public User getById(Long id){
-        return userDao.getById(id);
+        //对象缓存
+        User user = redisService.get(UserKey.getById, ""+id, User.class);
+        if (user!=null) return user;
+        //取数据库
+        user = userDao.getById(id);
+        //再存入缓存
+        if (user!=null) redisService.set(UserKey.getById, ""+id, user);
+
+        return user;
+    }
+
+    public boolean updatePassword(String token, long id, String fromPass){
+        //取user
+        User user = getById(id);
+        if (user==null) throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+
+        //更新数据库
+        User toBeUpdate = new User();
+        toBeUpdate.setId(id);
+        toBeUpdate.setPassword(MD5Util.formPassToDBPass(fromPass, user.getSalt()));
+        userDao.update(toBeUpdate);
+        //更新缓存，先删除在插入
+        redisService.delete(UserKey.getById, ""+id);
+        user.setPassword(toBeUpdate.getPassword());
+        redisService.set(UserKey.token, token, user);
+        return true;
     }
 
     /**
