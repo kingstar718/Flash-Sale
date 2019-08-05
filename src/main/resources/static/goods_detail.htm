@@ -38,7 +38,7 @@
             <td>秒杀开始时间</td>
             <td id="startTime"></td>
             <td >
-                <input type="hidden" id="remainSeconds" />
+                <input type="hidden" id="remainSeconds"/>
                 <span id="seckillTip"></span>
             </td>
             <td>
@@ -61,7 +61,14 @@
     </table>
 </div>
 </body>
+
 <script>
+
+    $(function () {
+        countDown();
+        getDetail();
+    });
+
     function getSeckillResult(goodsId){
         g_showLoading();
         $.ajax({
@@ -102,12 +109,12 @@
             url: "/seckill/do_seckill",
             type: "POST",
             data: {
-                goodsId: $("#goodsId").val(),
+                goodsId: $("#goodsId").val()
             },
             success: function (data) {
                 if (data.code == 0) {
-//                    window.location.href = "/order_detail.htm?orderId=" + data.data.id;
-                    getSeckillResult($("#goodsId").val());
+                    window.location.href = "/order_detail.htm?orderId=" + data.data.id;
+                    //getSeckillResult($("#goodsId").val());
                 } else {
                     layer.msg(data.msg);
                 }
@@ -134,12 +141,8 @@
         $("#goodsPrice").text(goods.goodsPrice);
         $("#seckillPrice").text(goods.seckillPrice);
         $("#stockCount").text(goods.stockCount);
+        //alert("remainSeconds的值为：" + $("#remainSeconds").val());  //能取到remain的值
     }
-
-    $(function () {
-        countDown();
-        getDetail();
-    });
 
     function getDetail() {
         var goodsId = g_getQueryString("goodsId");
@@ -162,6 +165,7 @@
 
     function countDown() {
         var remainSeconds = $("#remainSeconds").val();
+        //alert("countDown()中remainSeconds的值为：" + remainSeconds + " "+ $("#remainSeconds").val());
         var timeout;
         if (remainSeconds > 0) {//秒杀还没开始，倒计时
             $("#buyButton").attr("disabled", true);
@@ -182,6 +186,5 @@
             $("#seckillTip").html("秒杀已经结束");
         }
     }
-
 </script>
 </html>

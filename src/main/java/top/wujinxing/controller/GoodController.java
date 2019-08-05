@@ -11,8 +11,10 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import top.wujinxing.entity.User;
 import top.wujinxing.redis.GoodsKey;
 import top.wujinxing.redis.RedisService;
+import top.wujinxing.result.Result;
 import top.wujinxing.service.GoodsService;
 import top.wujinxing.service.UserService;
+import top.wujinxing.vo.GoodsDetailVo;
 import top.wujinxing.vo.GoodsVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -140,5 +142,48 @@ public class GoodController {
         }
         //return "goods_detail";
         return html;
+    }
+
+    // 新改写的商品详情页面
+    // 跳转到详情页
+    @GetMapping(value = "/detail/{goodsId}")
+    @ResponseBody
+    public Result<GoodsDetailVo> detail(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Model model,
+                                        User user,
+                                        @PathVariable("goodsId")long goodsId){
+        //互联网企业经常使用snowflake算法来生成ID，而不是使用UUID
+        model.addAttribute("user",user);
+
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
+        model.addAttribute("goods", goods);
+
+        //秒杀逻辑
+        long startTime = goods.getStartDate().getTime();
+        long endTime = goods.getEndDate().getTime();
+        long nowTime = System.currentTimeMillis();
+
+        int seckillStatus = 0;  //状态字符
+        int remainSeconds = 0;  //还剩余多少秒
+
+        if (nowTime < startTime){//秒杀未开始,倒计时
+            seckillStatus = 0;
+            remainSeconds = (int)((startTime-nowTime)/1000); //转换，且为秒
+        }else if (nowTime > endTime){//秒杀已结束
+            seckillStatus = 2;
+            remainSeconds = -1;
+        }else {//秒杀进行中
+            seckillStatus = 1;
+            remainSeconds = 0;
+        }
+
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoods(goods);
+        vo.setUser(user);
+        vo.setRemainSeconds(remainSeconds);
+        vo.setSeckillStatus(seckillStatus);
+        //整个vo对象没问题
+        return Result.success(vo);
     }
 }
