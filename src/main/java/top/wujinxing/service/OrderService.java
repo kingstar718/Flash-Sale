@@ -8,6 +8,8 @@ import top.wujinxing.entity.FlashSaleOrder;
 import top.wujinxing.entity.Goods;
 import top.wujinxing.entity.OrderInfo;
 import top.wujinxing.entity.User;
+import top.wujinxing.redis.OrderKey;
+import top.wujinxing.redis.RedisService;
 import top.wujinxing.vo.GoodsVo;
 
 import java.util.Date;
@@ -23,8 +25,13 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
+    @Autowired
+    RedisService redisService;
+
     public FlashSaleOrder getFlashSaleOrderByUserIdGoodsId(Long userId, long goodsId) {
-        return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
+        //不再查数据库 因为下面生成订单后直接加入了缓存
+        //return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
+        return redisService.get(OrderKey.getSeckillOrderByUidGid, ""+userId+"_"+goodsId, FlashSaleOrder.class);
     }
 
     public OrderInfo getOrderBuId(long orderId){
@@ -53,6 +60,9 @@ public class OrderService {
         flashSaleOrder.setOrderId(orderInfo.getId());
         flashSaleOrder.setUserId(user.getId());
         orderDao.insertFlashSaleOrder(flashSaleOrder);
+
+        //新修改,订单加入redis缓存
+        redisService.set(OrderKey.getSeckillOrderByUidGid, ""+user.getId()+"_"+goodsVo.getId(), FlashSaleOrder.class);
 
         return orderInfo;
     }
