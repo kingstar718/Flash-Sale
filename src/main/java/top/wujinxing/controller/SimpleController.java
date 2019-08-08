@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.wujinxing.entity.User;
+import top.wujinxing.rabbitmq.MQSender;
 import top.wujinxing.redis.UserKey;
 import top.wujinxing.result.Result;
 import top.wujinxing.redis.RedisService;
@@ -82,5 +83,36 @@ public class SimpleController {
         //参数的含义是 key前缀对象、key、类class  即什么类返回什么类对象
         User user = redisService.get(UserKey.getById, ""+1, User.class);
         return Result.success(user);
+    }
+
+    @Autowired
+    MQSender mqSender;
+
+    @RequestMapping("/mq")
+    @ResponseBody
+    public Result<String> mq(){
+        mqSender.send("hello, mq test");
+        return Result.success("sucess");
+    }
+
+    @RequestMapping("/mq_topic")
+    @ResponseBody
+    public Result<String> mq_topic(){
+        mqSender.sendTopic("hello, mq test");
+        return Result.success("success");
+    }
+
+    @RequestMapping("/mq_fanout")
+    @ResponseBody
+    public Result<String> mq_fanout(){
+        mqSender.sendFanout("hello, mq test");
+        return Result.success("success");
+    }
+
+    @RequestMapping("/mq_headers")
+    @ResponseBody
+    public Result<String> mq_headers(){
+        mqSender.sendHeaders("hello, mq test");
+        return Result.success("success");
     }
 }
