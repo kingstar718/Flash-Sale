@@ -88,7 +88,7 @@ public class SimpleController {
     @Autowired
     MQSender mqSender;
 
-    @RequestMapping("/mq")
+    /*@RequestMapping("/mq")
     @ResponseBody
     public Result<String> mq(){
         mqSender.send("hello, mq test");
@@ -114,5 +114,5 @@ public class SimpleController {
     public Result<String> mq_headers(){
         mqSender.sendHeaders("hello, mq test");
         return Result.success("success");
-    }
+    }*/
 }

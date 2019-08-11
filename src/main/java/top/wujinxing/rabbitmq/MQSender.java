@@ -22,7 +22,7 @@ public class MQSender {
     @Autowired
     AmqpTemplate amqpTemplate;
 
-    public void send(Object message){
+    /*public void send(Object message){
         String msg = RedisService.beanToString(message);
         log.info("send message:"+msg);
         amqpTemplate.convertAndSend(MQConfig.QUEUE, message);
@@ -51,5 +51,12 @@ public class MQSender {
         properties.setHeader("headers2", "value2");
         Message obj = new Message(msg.getBytes(), properties);
         amqpTemplate.convertAndSend(MQConfig.HEADERS_EXCHANGE, "",obj);
+    }*/
+
+    //将秒杀信息对象使用rabbitmq
+    public void sendSeckillMessage(SeckillMessage message){
+        String msg = RedisService.beanToString(message);
+        log.info("send seckill message: " + msg);
+        amqpTemplate.convertAndSend(MQConfig.QUEUE, msg);
     }
 }

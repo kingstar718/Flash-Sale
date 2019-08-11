@@ -29,9 +29,10 @@ public class GoodsService {
     }
 
     //减少库存的方法
-    public void reduceStock(GoodsVo goods){
+    public boolean reduceStock(GoodsVo goods){
         FlashSaleGoods g = new FlashSaleGoods();
         g.setGoodsId(goods.getId());
-        goodsDao.reduceStock(g);
+        int ret = goodsDao.reduceStock(g);
+        return ret > 0;
     }
 }

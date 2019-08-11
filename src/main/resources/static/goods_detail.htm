@@ -113,8 +113,8 @@
             },
             success: function (data) {
                 if (data.code == 0) {
-                    window.location.href = "/order_detail.htm?orderId=" + data.data.id;
-                    //getSeckillResult($("#goodsId").val());
+                    //window.location.href = "/order_detail.htm?orderId=" + data.data.id;
+                    getSeckillResult($("#goodsId").val());
                 } else {
                     layer.msg(data.msg);
                 }

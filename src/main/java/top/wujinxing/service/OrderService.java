@@ -30,8 +30,9 @@ public class OrderService {
 
     public FlashSaleOrder getFlashSaleOrderByUserIdGoodsId(Long userId, long goodsId) {
         //不再查数据库 因为下面生成订单后直接加入了缓存
-        //return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
-        return redisService.get(OrderKey.getSeckillOrderByUidGid, ""+userId+"_"+goodsId, FlashSaleOrder.class);
+        return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
+        //下面语句报错  不再使用
+        //return redisService.get(OrderKey.getSeckillOrderByUidGid, ""+userId+"_"+goodsId, FlashSaleOrder.class);
     }
 
     public OrderInfo getOrderBuId(long orderId){
@@ -53,7 +54,8 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
         orderInfo.setStatus(0);
         orderInfo.setUserId(user.getId());
-        long orderId = orderDao.insert(orderInfo);
+
+        orderDao.insert(orderInfo);
 
         FlashSaleOrder flashSaleOrder = new FlashSaleOrder();
         flashSaleOrder.setGoodsId(goodsVo.getId());

@@ -16,12 +16,19 @@ import java.util.Map;
 @Configuration
 public class MQConfig {
 
+    public static final String SECKILL_QUEUE = "seckill.queue";
     public static final String QUEUE = "queue";
     public static final String TOPIC_QUEUE1 = "topic.queuq1";
     public static final String TOPIC_QUEUE2 = "topic.queuq2";
     public static final String TOPIC_EXCHANGE = "topicExchange";
     public static final String FANOUT_EXCHANGE = "fanoutExchange";
     public static final String HEADERS_EXCHANGE = "headersExchange";
+
+
+    @Bean
+    public Queue seckillQueue(){
+        return new Queue(SECKILL_QUEUE, true);
+    }
 
     /**
      * Direct模式 交换机Exchange
@@ -35,7 +42,7 @@ public class MQConfig {
     /**
      * Topic模式 交换机Exchange
      */
-    @Bean
+    /*@Bean
     public Queue topicQueue1(){
         return new Queue(TOPIC_QUEUE1, true);
     }
@@ -57,9 +64,9 @@ public class MQConfig {
         return BindingBuilder.bind(topicQueue2()).to(topicExchange()).with("topic.#");//代表都能监听得到
     }
 
-    /**
+    *//**
      * Fanout模式 交换机Exchange
-     */
+     *//*
     @Bean
     public FanoutExchange fanoutExchange(){
         return new FanoutExchange(FANOUT_EXCHANGE);
@@ -73,9 +80,9 @@ public class MQConfig {
         return BindingBuilder.bind(topicQueue2()).to(fanoutExchange());
     }
 
-    /**
+    *//**
      * Headers模式
-     */
+     *//*
     @Bean
     public HeadersExchange headersExchange(){
         return new HeadersExchange(HEADERS_EXCHANGE);
@@ -94,6 +101,5 @@ public class MQConfig {
         map.put("headers2", "value2");
         return BindingBuilder.bind(headersQueue()).to(headersExchange()).whereAll(map).match();
     }
-
-
+*/
 }
