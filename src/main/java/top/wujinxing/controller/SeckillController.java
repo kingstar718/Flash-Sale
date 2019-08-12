@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import top.wujinxing.access.AccessLimit;
 import top.wujinxing.entity.FlashSaleOrder;
 import top.wujinxing.entity.Goods;
 import top.wujinxing.entity.OrderInfo;
 import top.wujinxing.entity.User;
 import top.wujinxing.rabbitmq.MQSender;
 import top.wujinxing.rabbitmq.SeckillMessage;
+import top.wujinxing.redis.AccessKey;
 import top.wujinxing.redis.GoodsKey;
 import top.wujinxing.redis.RedisService;
 import top.wujinxing.redis.SeckillKey;
@@ -24,6 +26,7 @@ import top.wujinxing.util.UUIDUtil;
 import top.wujinxing.vo.GoodsVo;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -146,15 +149,29 @@ public class SeckillController implements InitializingBean {
         return Result.success(orderId);
     }
 
+    @AccessLimit(seconds=5, maxCount=5, needLogin=true)
     @GetMapping("/path")
     @ResponseBody
     public Result<String> getSeckillPath(Model model,
                                User user,
+                               HttpServletRequest request,
                                @RequestParam("goodsId")long goodsId,
                                @RequestParam(value="verifyCode", defaultValue="0")int verifyCode){
 
         model.addAttribute("user", user);
         if (user == null) return Result.error(CodeMsg.SESSION_ERROR);
+
+        //查询访问次数  5秒钟访问5次 已使用注解
+        /*String uri = request.getRequestURI();
+        String key = uri + "_" + user.getId();
+        Integer count = redisService.get(AccessKey.access, key, Integer.class);
+        if (count==null){
+            redisService.set(AccessKey.access, key, 1);
+        }else if (count<5){
+            redisService.incr(AccessKey.access, key);
+        }else {
+            return Result.error(CodeMsg.ACCESS_LIMIT_REACHED);
+        }*/
 
         //判断验证码的正确性
         boolean check  = flashSaleService.checkVerifyCode(user, goodsId, verifyCode);
@@ -163,7 +180,6 @@ public class SeckillController implements InitializingBean {
         String path = flashSaleService.createSeckillPath(user, goodsId);
         return Result.success(path);
     }
-
     @GetMapping("/verifyCode")
     @ResponseBody
     public Result<String> verifyCode(HttpServletResponse response,

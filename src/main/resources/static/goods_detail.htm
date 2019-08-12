@@ -84,7 +84,7 @@
                     var path = data.data;
                     doSeckill(path);
                 } else {
-                    layer.msg(data.msg());
+                    layer.msg(data.msg);//不能写成msg()，不然访问不到值
                 }
             },
             error:function () {
