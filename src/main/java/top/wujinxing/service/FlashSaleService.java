@@ -9,6 +9,8 @@ import top.wujinxing.entity.OrderInfo;
 import top.wujinxing.entity.User;
 import top.wujinxing.redis.RedisService;
 import top.wujinxing.redis.SeckillKey;
+import top.wujinxing.util.MD5Util;
+import top.wujinxing.util.UUIDUtil;
 import top.wujinxing.vo.GoodsVo;
 
 /**
@@ -61,5 +63,19 @@ public class FlashSaleService {
 
     private boolean getGoodsOver(long goodsId){
         return redisService.exists(SeckillKey.isGoodsOver, ""+goodsId);
+    }
+
+    //验证path方法
+    public boolean checkPath(User user, long goodsId, String path) {
+        if (user==null || path==null) return false;
+        String pathOld = redisService.get(SeckillKey.getSeckillPath,""+user.getId()+"_"+goodsId, String.class);
+        return path.equals(pathOld);
+    }
+
+    //获取path
+    public String createSeckillPath(User user, long goodsId){
+        String str = MD5Util.md5(UUIDUtil.uuid() + "123456");
+        redisService.set(SeckillKey.getSeckillPath, ""+user.getId()+"_"+goodsId, str);
+        return str;
     }
 }

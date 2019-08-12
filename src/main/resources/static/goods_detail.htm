@@ -42,7 +42,7 @@
                 <span id="seckillTip"></span>
             </td>
             <td>
-                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="doSeckill()">立即秒杀</button>
+                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="getSeckillPath()">立即秒杀</button>
                 <input type="hidden" name="goodsId"  id="goodsId" />
             </td>
         </tr>
@@ -63,6 +63,29 @@
 </body>
 
 <script>
+    function getSeckillPath(){
+        var goodsId = $("#goodsId").val();
+        g_showLoading();
+        $.ajax({
+            url:"/seckill/path",
+            type:"GET",
+            data:{
+                goodsId:goodsId,
+            },
+            success:function (data) {
+                if (data.code===0){
+                    var path = data.data;
+                    doSeckill(path);
+                } else {
+                    layer.msg(data.msg());
+                }
+            },
+            error:function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
 
     $(function () {
         countDown();
@@ -85,7 +108,7 @@
                     }else if(result == 0){//继续轮询
                         setTimeout(function(){
                             getSeckillResult(goodsId);
-                        }, 50);
+                        }, 200);
                     }else{
                         layer.confirm("恭喜你，秒杀成功！查看订单？", {btn:["确定","取消"]},
                             function(){
@@ -104,9 +127,9 @@
             }
         });
     }
-    function doSeckill() {
+    function doSeckill(path) {
         $.ajax({
-            url: "/seckill/do_seckill",
+            url: "/seckill/"+path+"/do_seckill",
             type: "POST",
             data: {
                 goodsId: $("#goodsId").val()

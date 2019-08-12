@@ -13,11 +13,14 @@ import top.wujinxing.rabbitmq.MQSender;
 import top.wujinxing.rabbitmq.SeckillMessage;
 import top.wujinxing.redis.GoodsKey;
 import top.wujinxing.redis.RedisService;
+import top.wujinxing.redis.SeckillKey;
 import top.wujinxing.result.CodeMsg;
 import top.wujinxing.result.Result;
 import top.wujinxing.service.FlashSaleService;
 import top.wujinxing.service.GoodsService;
 import top.wujinxing.service.OrderService;
+import top.wujinxing.util.MD5Util;
+import top.wujinxing.util.UUIDUtil;
 import top.wujinxing.vo.GoodsVo;
 
 import java.util.HashMap;
@@ -50,15 +53,20 @@ public class SeckillController implements InitializingBean {
     //做标记，判断商品是否被处理过了
     private HashMap<Long,Boolean> localOverMap = new HashMap<>();
 
-    @PostMapping("/do_seckill")
+    @PostMapping("/{path}/do_seckill")
     @ResponseBody
     public Result<Integer> doSeckill(Model model,
                             User user,
+                            @PathVariable("path")String path,
                             @RequestParam("goodsId")long goodsId){
         model.addAttribute("user", user);
         //if (user==null) return "login";
 
         if (user==null) return Result.error(CodeMsg.SESSION_ERROR);
+
+        //验证path
+        boolean check = flashSaleService.checkPath(user, goodsId, path);
+        if (!check) return Result.error(CodeMsg.REQUEST_ILLEGAL);
 
         //内存标记，减少redis访问
         boolean over =localOverMap.get(goodsId);
@@ -131,5 +139,18 @@ public class SeckillController implements InitializingBean {
 
         long orderId = flashSaleService.getSeckillResult(user.getId(), goodsId);
         return Result.success(orderId);
+    }
+
+    @GetMapping("/path")
+    @ResponseBody
+    public Result<String> getSeckillPath(Model model,
+                               User user,
+                               @RequestParam("goodsId")long goodsId){
+
+        model.addAttribute("user", user);
+        if (user == null) return Result.error(CodeMsg.SESSION_ERROR);
+
+        String path = flashSaleService.createSeckillPath(user, goodsId);
+        return Result.success(path);
     }
 }
