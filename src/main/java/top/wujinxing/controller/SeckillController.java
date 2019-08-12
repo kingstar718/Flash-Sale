@@ -20,6 +20,7 @@ import top.wujinxing.service.GoodsService;
 import top.wujinxing.service.OrderService;
 import top.wujinxing.vo.GoodsVo;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -46,6 +47,9 @@ public class SeckillController implements InitializingBean {
     @Autowired
     MQSender mqSender;
 
+    //做标记，判断商品是否被处理过了
+    private HashMap<Long,Boolean> localOverMap = new HashMap<>();
+
     @PostMapping("/do_seckill")
     @ResponseBody
     public Result<Integer> doSeckill(Model model,
@@ -56,10 +60,15 @@ public class SeckillController implements InitializingBean {
 
         if (user==null) return Result.error(CodeMsg.SESSION_ERROR);
 
+        //内存标记，减少redis访问
+        boolean over =localOverMap.get(goodsId);
+        if (over) return Result.error(CodeMsg.SECKILL_OVER);
+
         //使用redis
         //预减库存
         long stock = redisService.derc(GoodsKey.getGoodsStock, ""+goodsId);
         if (stock<0){
+            localOverMap.put(goodsId, true);
             return Result.error(CodeMsg.REPEATE_SECKILL); //库存不足，秒杀失败
         }
 
@@ -99,6 +108,9 @@ public class SeckillController implements InitializingBean {
         for (GoodsVo goods: goodsVoList){
             redisService.set(GoodsKey.getGoodsStock, ""+goods.getId(), goods.getStockCount());
             //初始化商品都是没有经过处理的
+
+            //内存标记 ,表示初始化时商品都是没有处理过的
+            localOverMap.put(goods.getId(), false);
         }
     }
 

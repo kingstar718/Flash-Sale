@@ -30,9 +30,9 @@ public class OrderService {
 
     public FlashSaleOrder getFlashSaleOrderByUserIdGoodsId(Long userId, long goodsId) {
         //不再查数据库 因为下面生成订单后直接加入了缓存
-        return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
+        //return orderDao.getFlashSaleOrderByUserIdGoodsId(userId, goodsId);
         //下面语句报错  不再使用
-        //return redisService.get(OrderKey.getSeckillOrderByUidGid, ""+userId+"_"+goodsId, FlashSaleOrder.class);
+        return redisService.get(OrderKey.getSeckillOrderByUidGid, ""+userId+"_"+goodsId, FlashSaleOrder.class);
     }
 
     public OrderInfo getOrderBuId(long orderId){
@@ -64,7 +64,8 @@ public class OrderService {
         orderDao.insertFlashSaleOrder(flashSaleOrder);
 
         //新修改,订单加入redis缓存
-        redisService.set(OrderKey.getSeckillOrderByUidGid, ""+user.getId()+"_"+goodsVo.getId(), FlashSaleOrder.class);
+        redisService.set(OrderKey.getSeckillOrderByUidGid, ""+user.getId()+"_"+goodsVo.getId()
+                , flashSaleOrder);//之前写成FlashSaleOrder.class 是错的
 
         return orderInfo;
     }
