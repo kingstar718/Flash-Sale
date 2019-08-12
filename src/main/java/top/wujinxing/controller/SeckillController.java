@@ -23,6 +23,11 @@ import top.wujinxing.util.MD5Util;
 import top.wujinxing.util.UUIDUtil;
 import top.wujinxing.vo.GoodsVo;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -145,12 +150,39 @@ public class SeckillController implements InitializingBean {
     @ResponseBody
     public Result<String> getSeckillPath(Model model,
                                User user,
-                               @RequestParam("goodsId")long goodsId){
+                               @RequestParam("goodsId")long goodsId,
+                               @RequestParam(value="verifyCode", defaultValue="0")int verifyCode){
 
         model.addAttribute("user", user);
         if (user == null) return Result.error(CodeMsg.SESSION_ERROR);
 
+        //判断验证码的正确性
+        boolean check  = flashSaleService.checkVerifyCode(user, goodsId, verifyCode);
+        if (!check) return Result.error(CodeMsg.REQUEST_ILLEGAL);
+
         String path = flashSaleService.createSeckillPath(user, goodsId);
         return Result.success(path);
+    }
+
+    @GetMapping("/verifyCode")
+    @ResponseBody
+    public Result<String> verifyCode(HttpServletResponse response,
+                                     User user,
+                                     @RequestParam("goodsId")long goodsId){
+
+        if (user == null) return Result.error(CodeMsg.SESSION_ERROR);
+        //long longGoodsId = Long.parseLong(goodsId);
+        //System.out.println("商品id为："+longGoodsId);
+        try {
+            BufferedImage image = flashSaleService.createVerifyCode(user, goodsId);
+            OutputStream out = response.getOutputStream(); //数据已通过这样的形式返回
+            ImageIO.write(image, "JPEG", out);
+            out.flush();
+            out.close();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.error(CodeMsg.SECKILL_OVER);
+        }
     }
 }

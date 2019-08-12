@@ -42,7 +42,13 @@
                 <span id="seckillTip"></span>
             </td>
             <td>
-                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="getSeckillPath()">立即秒杀</button>
+                <div class="row">
+                    <div class="form-inline">
+                        <img id="verifyCodeImg" width="80" height="32" style="display: none" onclick="refreshVerifyCode()"/>
+                        <input id="verifyCode" class="form-control" style="display: none"/>
+                        <button class="btn btn-primary" type="button" id="buyButton" onclick="getSeckillPath()">立即秒杀</button>
+                    </div>
+                </div>
                 <input type="hidden" name="goodsId"  id="goodsId" />
             </td>
         </tr>
@@ -71,6 +77,7 @@
             type:"GET",
             data:{
                 goodsId:goodsId,
+                verifyCode:$("#verifyCode").val(),
             },
             success:function (data) {
                 if (data.code===0){
@@ -204,10 +211,24 @@
                 clearTimeout(timeout);
             }
             $("#seckillTip").html("秒杀进行中");
+            //生成验证码
+            var goodsId = g_getQueryString("goodsId");
+            //$("#goodsId").val() 不知道为什么拿不到goodsId的值
+            $("#verifyCodeImg").attr("src", "/seckill/verifyCode?goodsId="+goodsId);
+            $("#verifyCodeImg").show();
+            $("#verifyCode").show();
+
         } else {//秒杀已经结束
             $("#buyButton").attr("disabled", true);
             $("#seckillTip").html("秒杀已经结束");
+
+            $("#verifyCodeImg").hide();
+            $("#verifyCode").hide();
         }
+    }
+
+    function refreshVerifyCode(){
+        $("#verifyCodeImg").attr("src", "/seckill/verifyCode?goodsId="+$("#goodsId").val()+"&timestamp="+new Date().getTime());
     }
 </script>
 </html>
