@@ -1,5 +1,6 @@
 package top.wujinxing.controller;
 
+import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wujinxing
@@ -58,6 +60,9 @@ public class SeckillController implements InitializingBean {
     @Autowired
     MQSender mqSender;
 
+    //基于令牌桶算法的限流实现类
+    RateLimiter rateLimiter = RateLimiter.create(10);
+
     //做标记，判断商品是否被处理过了
     private HashMap<Long,Boolean> localOverMap = new HashMap<>();
 
@@ -67,6 +72,11 @@ public class SeckillController implements InitializingBean {
                             User user,
                             @PathVariable("path")String path,
                             @RequestParam("goodsId")long goodsId){
+        //限流
+        if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS)){
+            return Result.error(CodeMsg.ACCESS_LIMIT_REACHED);
+        }
+
         model.addAttribute("user", user);
         //if (user==null) return "login";
 
